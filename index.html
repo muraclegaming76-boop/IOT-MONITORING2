@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Dashboard Monitoring Peralatan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-6">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-md rounded-2xl p-6 mb-6 text-center">
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard IoT Deteksi Bahan Bakar & Monitoring</h1>
+            <p class="text-sm text-slate-500 mt-1">Proyek Realtime Database: iot-genset-17a90</p>
+        </header>
+
+        <!-- Grid Utama -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- PANEL 1: MONITORING SENSOR -->
+            <div class="bg-white shadow-md rounded-2xl p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">📊 Monitoring Sensor</h2>
+                
+                <!-- Jarak & Status Kereta -->
+                <div class="mb-4 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <p class="text-xs text-blue-600 font-semibold uppercase">Jarak Sensor (HC-SR04)</p>
+                    <p class="text-3xl font-extrabold text-blue-900 mt-1"><span id="val-jarak">--</span> <span class="text-lg font-normal">cm</span></p>
+                    <p class="text-sm font-medium mt-2 text-slate-700">Status: <span id="val-status" class="px-2 py-0.5 rounded text-white bg-slate-400">Menghubungkan...</span></p>
+                </div>
+
+                <!-- Tegangan & Arus -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                        <p class="text-xs text-emerald-600 font-semibold uppercase">⚡ Tegangan</p>
+                        <p class="text-2xl font-bold text-emerald-900 mt-1"><span id="val-tegangan">--</span> <span class="text-sm">V</span></p>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                        <p class="text-xs text-amber-600 font-semibold uppercase">🔌 Arus</p>
+                        <p class="text-2xl font-bold text-amber-900 mt-1"><span id="val-arus">--</span> <span class="text-sm">A</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: KONTROL RELAY (3 BIJI) -->
+            <div class="bg-white shadow-md rounded-2xl p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">🎛️ Kontrol Switch Relay</h2>
+                
+                <div class="space-y-4">
+                    <!-- Relay 1 -->
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 1</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay1" class="sr-only peer" onchange="toggleRelay('relay1', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Relay 2 -->
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 2</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay2" class="sr-only peer" onchange="toggleRelay('relay2', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Relay 3 -->
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 3</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay3" class="sr-only peer" onchange="toggleRelay('relay3', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Modular v9) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            databaseURL: "https://iot-genset-17a90-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 1. Mendengarkan Perubahan Data Sensor secara Real-time
+        onValue(ref(db, 'sensor'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('val-jarak').innerText = data.jarak !== undefined ? data.jarak.toFixed(1) : '--';
+                document.getElementById('val-tegangan').innerText = data.tegangan !== undefined ? data.tegangan.toFixed(1) : '0.0';
+                document.getElementById('val-arus').innerText = data.arus !== undefined ? data.arus.toFixed(2) : '0.0';
+                
+                const statusEl = document.getElementById('val-status');
+                statusEl.innerText = data.status || 'Normal';
+                if(data.status && data.status.includes("Mendekat")) {
+                    statusEl.className = "px-2 py-0.5 rounded text-white bg-red-500 font-bold animate-pulse";
+                } else {
+                    statusEl.className = "px-2 py-0.5 rounded text-white bg-emerald-500 font-semibold";
+                }
+            }
+        });
+
+        // 2. Mendengarkan Status Relay dari Database untuk Update Tampilan Switch
+        onValue(ref(db, 'control'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('relay1').checked = data.relay1 === 1;
+                document.getElementById('relay2').checked = data.relay2 === 1;
+                document.getElementById('relay3').checked = data.relay3 === 1;
+            }
+        });
+
+        // 3. Fungsi untuk Mengubah Status Relay saat Switch di-klik di Web
+        window.toggleRelay = function(relayName, isChecked) {
+            const valueToSet = isChecked ? 1 : 0;
+            set(ref(db, 'control/' + relayName), valueToSet)
+                .then(() => {
+                    console.log(relayName + " berhasil diubah menjadi: " + valueToSet);
+                })
+                .catch((error) => {
+                    console.error("Gagal mengubah relay: ", error);
+                });
+        }
+    </script>
+</body>
+</html>
