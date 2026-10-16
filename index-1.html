@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard IoT Genset & Kereta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-6">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-md rounded-2xl p-6 mb-6 text-center">
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard IoT Generator & Sensor</h1>
+            <p class="text-sm text-slate-500 mt-1">Multi-Controller Firebase Monitoring System</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- PANEL 1: MONITORING SENSOR (DENGAN GRAFIK BULAT) -->
+            <div class="bg-white shadow-md rounded-2xl p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">📊 Monitoring Sensor</h2>
+                
+                <!-- Indikator Bulat (Gauge) untuk Suhu & Jarak -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <!-- Grafik Bulat Suhu -->
+                    <div class="flex flex-col items-center bg-orange-50 p-4 rounded-xl border border-orange-100">
+                        <span class="text-xs text-orange-600 font-semibold uppercase mb-2">🌡️ Suhu Ruang</span>
+                        <div class="relative w-28 h-28 rounded-full border-8 border-orange-200 flex items-center justify-center bg-white shadow-inner">
+                            <span id="val-suhu" class="text-2xl font-extrabold text-orange-900">--</span>
+                            <span class="absolute bottom-4 text-xs font-medium text-orange-700">°C</span>
+                        </div>
+                    </div>
+
+                    <!-- Grafik Bulat Jarak -->
+                    <div class="flex flex-col items-center bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <span class="text-xs text-blue-600 font-semibold uppercase mb-2">📏 Jarak Sensor</span>
+                        <div class="relative w-28 h-28 rounded-full border-8 border-blue-200 flex items-center justify-center bg-white shadow-inner">
+                            <span id="val-jarak" class="text-xl font-extrabold text-blue-900">--</span>
+                            <span class="absolute bottom-4 text-xs font-medium text-blue-700">cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status & Listrik -->
+                <div class="mb-4 bg-slate-50 p-3 rounded-xl border text-center">
+                    <p class="text-sm font-medium text-slate-700">Status Kereta: <span id="val-status" class="px-2 py-0.5 rounded text-white bg-slate-400">Menghubungkan...</span></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 text-center">
+                        <p class="text-xs text-emerald-600 font-semibold uppercase">⚡ Tegangan</p>
+                        <p class="text-xl font-bold text-emerald-900 mt-1"><span id="val-tegangan">--</span> V</p>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
+                        <p class="text-xs text-amber-600 font-semibold uppercase">🔌 Arus</p>
+                        <p class="text-xl font-bold text-amber-900 mt-1"><span id="val-arus">--</span> A</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: KONTROL RELAY (3 BIJI) -->
+            <div class="bg-white shadow-md rounded-2xl p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">🎛️ Kontrol Switch Relay</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 1</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay1" class="sr-only peer" onchange="toggleRelay('relay1', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 2</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay2" class="sr-only peer" onchange="toggleRelay('relay2', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                        <span class="font-medium text-slate-700">Relay 3</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="relay3" class="sr-only peer" onchange="toggleRelay('relay3', this.checked)">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://iot-genset-17a90-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        onValue(ref(db, 'sensor'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('val-jarak').innerText = data.jarak !== undefined ? data.jarak.toFixed(1) : '--';
+                document.getElementById('val-suhu').innerText = data.suhu !== undefined ? data.suhu.toFixed(1) : '--';
+                document.getElementById('val-tegangan').innerText = data.tegangan !== undefined ? data.tegangan.toFixed(1) : '0.0';
+                document.getElementById('val-arus').innerText = data.arus !== undefined ? data.arus.toFixed(2) : '0.0';
+                
+                const statusEl = document.getElementById('val-status');
+                statusEl.innerText = data.status || 'Normal';
+                statusEl.className = (data.status && data.status.includes("Mendekat")) 
+                    ? "px-2 py-0.5 rounded text-white bg-red-500 font-bold animate-pulse" 
+                    : "px-2 py-0.5 rounded text-white bg-emerald-500 font-semibold";
+            }
+        });
+
+        onValue(ref(db, 'control'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('relay1').checked = data.relay1 === 1;
+                document.getElementById('relay2').checked = data.relay2 === 1;
+                document.getElementById('relay3').checked = data.relay3 === 1;
+            }
+        });
+
+        window.toggleRelay = function(relayName, isChecked) {
+            set(ref(db, 'control/' + relayName), isChecked ? 1 : 0);
+        }
+    </script>
+</body>
+</html>
