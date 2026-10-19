@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Genset UPT Resor STL 1.13 JNG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-yellow-300 min-h-screen p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header dengan Logo KAI Tipografi Resmi, Judul, & Status Genset -->
+        <header class="bg-white shadow-md rounded-2xl p-6 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4 w-full md:w-auto">
+                <!-- Logo KAI Resmi (Desain Tipografi CSS Modern) -->
+                <div class="flex items-center space-x-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl shadow-inner flex-shrink-0">
+                    <span class="text-2xl font-black italic tracking-tighter" style="color: #2D2A70;">K</span>
+                    <div class="w-3 h-6 transform -skew-x-12 mx-0.5" style="background-color: #EE6327;"></div>
+                    <span class="text-2xl font-black italic tracking-tighter" style="color: #2D2A70;">AI</span>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h1 class="text-xl md:text-2xl font-bold text-slate-800">MONITORING GENSET UPT RESOR STL 1.13 JNG</h1>
+                        <!-- Badge GENSET ON/OFF -->
+                        <div id="genset-status-badge" class="px-4 py-1.5 rounded-full text-sm font-extrabold bg-gray-200 text-gray-700 shadow-sm">
+                            GENSET OFF 🔴
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Sistem Monitoring IoT & Data Logger Real-time</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- KOLOM KIRI & TENGAH: MONITORING SENSOR & LISTRIK -->
+            <div class="md:col-span-2 space-y-6">
+                
+                <!-- Panel Sensor Suhu & Jarak -->
+                <div class="bg-white shadow-md rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">📊 Monitoring Sensor & Lingkungan</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <!-- Grafik Bulat Suhu -->
+                        <div class="flex flex-col items-center bg-orange-50 p-4 rounded-xl border border-orange-100">
+                            <span class="text-xs text-orange-600 font-semibold uppercase mb-2">🌡️ Suhu Ruang</span>
+                            <div class="relative w-28 h-28 rounded-full border-8 border-orange-200 flex items-center justify-center bg-white shadow-inner">
+                                <span id="val-suhu" class="text-2xl font-extrabold text-orange-900">--</span>
+                                <span class="absolute bottom-4 text-xs font-medium text-orange-700">°C</span>
+                            </div>
+                        </div>
+
+                        <!-- Grafik Bulat Jarak -->
+                        <div class="flex flex-col items-center bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <span class="text-xs text-blue-600 font-semibold uppercase mb-2">📏 Jarak Sensor</span>
+                            <div class="relative w-28 h-28 rounded-full border-8 border-blue-200 flex items-center justify-center bg-white shadow-inner">
+                                <span id="val-jarak" class="text-xl font-extrabold text-blue-900">--</span>
+                                <span class="absolute bottom-4 text-xs font-medium text-blue-700">cm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Jalur -->
+                    <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                        <p class="text-sm font-medium text-slate-700">Status Jalur: <span id="val-status" class="px-2 py-0.5 rounded text-white bg-slate-400">Menghubungkan...</span></p>
+                    </div>
+                </div>
+
+                <!-- Panel Tegangan 3 Phasa, Arus & Daya (Watt) -->
+                <div class="bg-white shadow-md rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">⚡ Parameter Listrik & Daya Genset</h2>
+                    
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="bg-red-50 p-3 rounded-xl border border-red-100 text-center">
+                            <p class="text-xs text-red-600 font-bold uppercase">Phasa R</p>
+                            <p class="text-lg font-extrabold text-red-900 mt-1"><span id="val-vr">--</span> V</p>
+                        </div>
+                        <div class="bg-yellow-50 p-3 rounded-xl border border-yellow-100 text-center">
+                            <p class="text-xs text-yellow-600 font-bold uppercase">Phasa S</p>
+                            <p class="text-lg font-extrabold text-yellow-900 mt-1"><span id="val-vs">--</span> V</p>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 text-center">
+                            <p class="text-xs text-blue-600 font-bold uppercase">Phasa T</p>
+                            <p class="text-lg font-extrabold text-blue-900 mt-1"><span id="val-vt">--</span> V</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 text-center">
+                            <p class="text-xs text-emerald-600 font-semibold uppercase">Volt Rata2</p>
+                            <p class="text-base font-bold text-emerald-900 mt-1"><span id="val-tegangan">--</span> V</p>
+                        </div>
+                        <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
+                            <p class="text-xs text-amber-600 font-semibold uppercase">Arus</p>
+                            <p class="text-base font-bold text-amber-900 mt-1"><span id="val-arus">--</span> A</p>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 text-center">
+                            <p class="text-xs text-purple-600 font-semibold uppercase">⚡ Daya</p>
+                            <p class="text-base font-extrabold text-purple-900 mt-1"><span id="val-daya">--</span> W</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- KOLOM KANAN: KONTROL RELAY & DATA LOGGER -->
+            <div class="space-y-6">
+                
+                <!-- Panel Kontrol Relay 3 Chanel -->
+                <div class="bg-white shadow-md rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-4 border-b pb-2">🎛️ Kontrol Relay (3 Ch)</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                            <span class="font-medium text-slate-700 text-sm">Relay 1</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay1" class="sr-only peer" onchange="toggleRelay('relay1', this.checked)">
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                            <span class="font-medium text-slate-700 text-sm">Relay 2</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay2" class="sr-only peer" onchange="toggleRelay('relay2', this.checked)">
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+                            <span class="font-medium text-slate-700 text-sm">Relay 3</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay3" class="sr-only peer" onchange="toggleRelay('relay3', this.checked)">
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu Data Logger (Otomatis Hapus Setelah 5 Menit) -->
+                <div class="bg-white shadow-md rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-2 border-b pb-2">📋 Menu Data Logger</h2>
+                    <p class="text-xs text-slate-500 mb-3">Mencatat saat jarak &lt; 10 cm. <span class="text-red-500 font-semibold">(Data otomatis terhapus setelah 5 menit)</span></p>
+                    
+                    <div class="overflow-y-auto max-h-48 border rounded-xl bg-slate-50 p-2">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="bg-slate-200 text-slate-700">
+                                <tr>
+                                    <th class="p-2">Waktu</th>
+                                    <th class="p-2">Kejadian</th>
+                                    <th class="p-2">Jarak</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logger-table-body">
+                                <tr>
+                                    <td colspan="3" class="p-3 text-center text-slate-400">Belum ada riwayat tercatat...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://iot-genset-17a90-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let jarakSebelumnyaDekat = false;
+        const LIMA_MENIT_MS = 5 * 60 * 1000;
+
+        onValue(ref(db, 'sensor'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                let jarak = data.jarak !== undefined ? data.jarak : 100.0;
+                let suhu = data.suhu !== undefined ? data.suhu : 0.0;
+                let vR = data.voltR || 220.0;
+                let vS = data.voltS || 220.0;
+                let vT = data.voltT || 220.0;
+                let arus = data.arus !== undefined ? data.arus : 0.0;
+
+                document.getElementById('val-jarak').innerText = jarak.toFixed(1);
+                document.getElementById('val-suhu').innerText = suhu.toFixed(1);
+                
+                document.getElementById('val-vr').innerText = vR.toFixed(1);
+                document.getElementById('val-vs').innerText = vS.toFixed(1);
+                document.getElementById('val-vt').innerText = vT.toFixed(1);
+
+                let avgVolt = (vR + vS + vT) / 3;
+                document.getElementById('val-tegangan').innerText = avgVolt.toFixed(1);
+                document.getElementById('val-arus').innerText = arus.toFixed(2);
+
+                let dayaWatt = avgVolt * arus;
+                document.getElementById('val-daya').innerText = dayaWatt.toFixed(0);
+                
+                const statusEl = document.getElementById('val-status');
+                statusEl.innerText = data.status || 'Normal';
+                statusEl.className = (jarak < 10 && jarak > 0) 
+                    ? "px-2 py-0.5 rounded text-white bg-red-500 font-bold animate-pulse" 
+                    : "px-2 py-0.5 rounded text-white bg-emerald-500 font-semibold";
+
+                let gensetNyala = avgVolt > 300; 
+                const badgeGenset = document.getElementById('genset-status-badge');
+
+                if (gensetNyala) {
+                    badgeGenset.innerText = "GENSET ON 🟢";
+                    badgeGenset.className = "px-4 py-1.5 rounded-full text-sm font-extrabold bg-emerald-500 text-white animate-pulse shadow-md";
+                } else {
+                    badgeGenset.innerText = "GENSET OFF 🔴";
+                    badgeGenset.className = "px-4 py-1.5 rounded-full text-sm font-extrabold bg-red-100 text-red-600 shadow-sm";
+                }
+
+                if (jarak < 10 && jarak > 0) {
+                    if (!jarakSebelumnyaDekat) {
+                        const skrg = Date.now();
+                        push(ref(db, 'logger'), {
+                            timestamp: skrg,
+                            waktu: new Date().toLocaleTimeString() + " - " + new Date().toLocaleDateString(),
+                            status: "Kereta < 10cm",
+                            jarak: jarak.toFixed(1) + " cm"
+                        });
+                        jarakSebelumnyaDekat = true;
+                    }
+                } else {
+                    jarakSebelumnyaDekat = false;
+                }
+            }
+        });
+
+        onValue(ref(db, 'logger'), (snapshot) => {
+            const tbody = document.getElementById('logger-table-body');
+            tbody.innerHTML = "";
+            let logs = [];
+            const waktuSekarang = Date.now();
+
+            snapshot.forEach((childSnapshot) => {
+                const key = childSnapshot.key;
+                const logData = childSnapshot.val();
+
+                if (logData.timestamp && (waktuSekarang - logData.timestamp > LIMA_MENIT_MS)) {
+                    remove(ref(db, `logger/${key}`));
+                } else {
+                    logs.push(logData);
+                }
+            });
+
+            if (logs.length > 0) {
+                logs.reverse().slice(0, 10).forEach(log => {
+                    let row = `<tr class="border-b"><td class="p-2">${log.waktu}</td><td class="p-2 text-red-600 font-bold">${log.status}</td><td class="p-2">${log.jarak}</td></tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-400">Belum ada riwayat tercatat...</td></tr>`;
+            }
+        });
+
+        onValue(ref(db, 'control'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('relay1').checked = data.relay1 === 1;
+                document.getElementById('relay2').checked = data.relay2 === 1;
+                document.getElementById('relay3').checked = data.relay3 === 1;
+            }
+        });
+
+        window.toggleRelay = function(relayName, isChecked) {
+            set(ref(db, 'control/' + relayName), isChecked ? 1 : 0);
+        }
+    </script>
+</body>
+</html>
