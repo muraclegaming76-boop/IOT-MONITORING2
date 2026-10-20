@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring IoT Genset</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- HEADER -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-sky-400 flex items-center gap-3">
+                    <i class="fa-solid fa-bolt"></i> Monitoring IoT Genset UPT STL 1.13 JNG
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Sistem Pemantauan Tegangan, Arus & Deteksi Dini Realtime</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="genset-status-badge" class="px-4 py-1.5 rounded-full text-sm font-extrabold bg-red-100 text-red-600 shadow-sm">
+                    GENSET OFF 🔴
+                </span>
+            </div>
+        </div>
+
+        <!-- MAIN CARDS GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- CARD TEGANGAN UTAMA -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                <div class="flex justify-between items-center text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Tegangan Rata-Rata</span>
+                    <i class="fa-solid fa-plug text-sky-400"></i>
+                </div>
+                <div class="text-3xl font-extrabold text-white">
+                    <span id="val-tegangan">0.0</span> <span class="text-lg font-semibold text-sky-400">V</span>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-700/60 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div>
+                        <span class="text-slate-400 block">R</span>
+                        <span class="font-bold text-slate-200" id="val-vr">0.0</span> V
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">S</span>
+                        <span class="font-bold text-slate-200" id="val-vs">0.0</span> V
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">T</span>
+                        <span class="font-bold text-slate-200" id="val-vt">0.0</span> V
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD ARUS & DAYA -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                <div class="flex justify-between items-center text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Beban & Arus</span>
+                    <i class="fa-solid fa-wave-square text-amber-400"></i>
+                </div>
+                <div class="text-3xl font-extrabold text-white">
+                    <span id="val-arus">0.00</span> <span class="text-lg font-semibold text-amber-400">A</span>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-700/60 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Estimasi Daya:</span>
+                    <span class="font-bold text-amber-300 text-sm"><span id="val-daya">0</span> Watt</span>
+                </div>
+            </div>
+
+            <!-- CARD SUHU GENSET -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                <div class="flex justify-between items-center text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Suhu Mesin</span>
+                    <i class="fa-solid fa-temperature-half text-rose-400"></i>
+                </div>
+                <div class="text-3xl font-extrabold text-white">
+                    <span id="val-suhu">0.0</span> <span class="text-lg font-semibold text-rose-400">°C</span>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-700/60 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Status Suhu:</span>
+                    <span class="font-bold text-emerald-400">Aman</span>
+                </div>
+            </div>
+
+            <!-- CARD SENSOR JARAK / ULTRASONIK -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                <div class="flex justify-between items-center text-slate-400 mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider">Deteksi Dini Jarak</span>
+                    <i class="fa-solid fa-ruler-vertical text-emerald-400"></i>
+                </div>
+                <div class="text-3xl font-extrabold text-white">
+                    <span id="val-jarak">0.0</span> <span class="text-lg font-semibold text-emerald-400">cm</span>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-700/60 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Kondisi Objek:</span>
+                    <span id="val-status" class="px-2 py-0.5 rounded text-white bg-emerald-500 font-semibold">Normal</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- LOWER SECTION: TABEL LOGGER & KONTROL RELAY -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- TABEL LOGGER DATA (2 KOLOM) -->
+            <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-sky-400"></i> Riwayat Deteksi Realtime
+                    </h2>
+                    
+                    <div class="flex items-center gap-2">
+                        <!-- INDIKATOR AUTO-SYNC -->
+                        <span class="px-2.5 py-1 bg-emerald-900/60 text-emerald-400 border border-emerald-700/50 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Sheets
+                        </span>
+
+                        <!-- TOMBOL DOWNLOAD EXCEL CSV -->
+                        <button onclick="downloadCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i> Export Excel (.csv)
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 border-b border-slate-700">
+                            <tr>
+                                <th class="p-3">Keterangan</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Jarak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logger-table-body" class="divide-y divide-slate-700/50">
+                            <tr>
+                                <td colspan="3" class="p-4 text-center text-slate-500">Menunggu data logger...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- KONTROL RELAY / SAKELAR (1 KOLOM) -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Kontrol Relay
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <!-- RELAY 1 -->
+                        <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                            <span class="font-semibold text-slate-300">Relay 1</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay1" onchange="toggleRelay('relay1', this.checked)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- RELAY 2 -->
+                        <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                            <span class="font-semibold text-slate-300">Relay 2</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay2" onchange="toggleRelay('relay2', this.checked)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- RELAY 3 -->
+                        <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                            <span class="font-semibold text-slate-300">Relay 3</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="relay3" onchange="toggleRelay('relay3', this.checked)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-700/50 text-xs text-slate-400 text-center">
+                    Gunakan sakelar di atas untuk mengontrol relay ESP32 secara realtime.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FIREBASE SDK & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // CONFIG FIREBASE
+        const firebaseConfig = {
+            databaseURL: "https://iot-genset-17a90-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        // PASTE URL GOOGLE APPS SCRIPT ANDA DI SINI
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUHh1d2nLyVwZ8QCEKqyEXulDjjEIzfrO1iYgqNSLuKPFgA3EIIKNFAT3zCmJta9mM/exec";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Penampung data log untuk tombol Export Excel
+        window.currentLogsData = [];
+        const syncedKeys = new Set();
+
+        // 1. READ SENSOR REALTIME
+        onValue(ref(db, 'sensor'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                let jarak = data.jarak !== undefined ? data.jarak : 0.0;
+                let suhu = data.suhu !== undefined ? data.suhu : 0.0;
+                let tegangan = data.tegangan || 0.0;
+                let arus = data.arus !== undefined ? data.arus : 0.0;
+
+                document.getElementById('val-jarak').innerText = jarak.toFixed(1);
+                document.getElementById('val-suhu').innerText = suhu.toFixed(1);
+                
+                document.getElementById('val-vr').innerText = tegangan.toFixed(1);
+                document.getElementById('val-vs').innerText = tegangan.toFixed(1);
+                document.getElementById('val-vt').innerText = tegangan.toFixed(1);
+                document.getElementById('val-tegangan').innerText = tegangan.toFixed(1);
+
+                document.getElementById('val-arus').innerText = arus.toFixed(2);
+
+                let dayaWatt = tegangan * arus;
+                document.getElementById('val-daya').innerText = dayaWatt.toFixed(0);
+                
+                const statusEl = document.getElementById('val-status');
+                statusEl.innerText = data.status || 'Aman / Kosong';
+                statusEl.className = (jarak < 10 && jarak > 0) 
+                    ? "px-2 py-0.5 rounded text-white bg-red-500 font-bold animate-pulse" 
+                    : "px-2 py-0.5 rounded text-white bg-emerald-500 font-semibold";
+
+                let gensetNyala = tegangan > 100; 
+                const badgeGenset = document.getElementById('genset-status-badge');
+
+                if (gensetNyala) {
+                    badgeGenset.innerText = "GENSET ON 🟢";
+                    badgeGenset.className = "px-4 py-1.5 rounded-full text-sm font-extrabold bg-emerald-500 text-white animate-pulse shadow-md";
+                } else {
+                    badgeGenset.innerText = "GENSET OFF 🔴";
+                    badgeGenset.className = "px-4 py-1.5 rounded-full text-sm font-extrabold bg-red-100 text-red-600 shadow-sm";
+                }
+            }
+        });
+
+        // 2. READ DATA LOGGER, AUTO-SYNC SHEETS & PENAMPUNG EXCEL
+        onValue(ref(db, 'logger'), (snapshot) => {
+            const tbody = document.getElementById('logger-table-body');
+            tbody.innerHTML = "";
+            let logs = [];
+
+            snapshot.forEach((childSnapshot) => {
+                const key = childSnapshot.key;
+                const logData = childSnapshot.val();
+                
+                if (logData) {
+                    logs.push(logData);
+
+                    // Kirim otomatis ke Google Sheets jika log ini belum pernah dikirim
+                    if (!syncedKeys.has(key) && GOOGLE_SCRIPT_URL !== "PASTE_URL_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI") {
+                        syncedKeys.add(key);
+                        
+                        fetch(GOOGLE_SCRIPT_URL, {
+                            method: "POST",
+                            mode: "no-cors",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                waktu: logData.waktu || '-',
+                                status: logData.status || '-',
+                                jarak: logData.jarak || '-'
+                            })
+                        }).then(() => {
+                            console.log("Log tersimpan permanen ke Google Sheets:", key);
+                        }).catch(err => console.error("Gagal sync Google Sheets:", err));
+                    }
+                }
+            });
+
+            // Simpan ke variabel global untuk tombol download CSV/Excel
+            window.currentLogsData = logs;
+
+            if (logs.length > 0) {
+                logs.reverse().slice(0, 10).forEach(log => {
+                    let row = `
+                        <tr class="hover:bg-slate-700/30 transition-colors">
+                            <td class="p-3 font-medium text-sky-300">${log.waktu || '-'}</td>
+                            <td class="p-3 text-red-400 font-bold">${log.status || '-'}</td>
+                            <td class="p-3 font-semibold">${log.jarak || '-'}</td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Belum ada riwayat tercatat...</td></tr>`;
+            }
+        });
+
+        // 3. READ & SINKRONISASI KONTROL RELAY
+        onValue(ref(db, 'control'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('relay1').checked = data.relay1 === 1;
+                document.getElementById('relay2').checked = data.relay2 === 1;
+                document.getElementById('relay3').checked = data.relay3 === 1;
+            }
+        });
+
+        // 4. MENGIRIM PERINTAH TOGGLE RELAY
+        window.toggleRelay = function(relayName, isChecked) {
+            set(ref(db, 'control/' + relayName), isChecked ? 1 : 0);
+        };
+    </script>
+
+    <!-- FUNGSI DOWNLOAD EXCEL CSV -->
+    <script>
+        function downloadCSV() {
+            if (!window.currentLogsData || window.currentLogsData.length === 0) {
+                alert("Tidak ada data logger yang tersedia saat ini untuk diunduh!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,WAKTU DETEKSI,STATUS,JARAK\n";
+
+            window.currentLogsData.forEach(function(row) {
+                let waktu = row.waktu ? `"${row.waktu}"` : '""';
+                let status = row.status ? `"${row.status}"` : '""';
+                let jarak = row.jarak ? `"${row.jarak}"` : '""';
+                csvContent += `${waktu},${status},${jarak}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            
+            const today = new Date().toISOString().slice(0, 10);
+            link.setAttribute("download", `Log_Deteksi_Genset_${today}.csv`);
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
